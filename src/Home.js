@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BlogList from "./BlogList";
+import useFetch from "./useFetch";
+import { Link } from "react-router-dom";
 
 const Home = () => {
     /*
@@ -14,22 +16,26 @@ const Home = () => {
         const [name, setName] = useState('Tea');
         const [age, setAge] = useState(40);
 
-        const updateName = () =>{
+        const updateName = () => {
             setName('Flower');
         }
-        const updateAge = () =>{
+        const updateAge = () => {
             setAge(100);
         }
-        const updateAll = () =>{
+        const updateAll = () => {
             setName('Flower');
             setAge(100);
         }
     */
-   const [blogs, setBlogs] = useState([
-       {id: 1, title: 'My New Blog', body: 'Here is the heading and then the body', author: 'Tea'},
-       {id: 2, title: 'My Welcome Party', body: 'Here is the program for the party', author: 'Bestie'},
-       {id: 3, title: 'Web Dev Summit', body: 'Here is the venue and time', author: 'Tea'}
-   ])
+
+    const { blogs, isLoading, netErr} = useFetch('http://localhost:8000/blogs');
+
+    /*const handleDelete = (id) => {
+        const newblogs = blogs.filter((blog) => blog.id !== id);
+        setData(newblogs);
+    }*/
+   
+
 
     return (
         <div className="home">
@@ -39,15 +45,30 @@ const Home = () => {
             {/*<p>{name} is {age} years old</p>*/}
             {/*<button onClick={handleClick}>Click to See</button>*/}
             {/*<button onClick={(e) =>{reClick("Tea is Back", e)}}>Click Again</button>*/}
-            
+                
             {/*<button onClick={updateName}>Update Name</button>*/}
             {/*<button onClick={updateAge}>Update Age</button>*/}
-            {/*<button onClick={updateAll}>Update All</button>*/}
+            {/*<button onClick={updateAll}>Update All </button>*/}
 
-            <BlogList blogs={blogs} title="All Blogs!"/>
-
+            {/*<BlogList blogs={blogs} title="All blogs!"/>*/}
+            {isLoading && <div>Loading...</div>}
+            {netErr && <div>{netErr}</div>}
+            {!isLoading && blogs && <BlogList blogs={blogs.filter((blog) => blog.author !== '')} title="Tea's blogs!" /*handleDelete={handleDelete}*//>}
+            {!isLoading && blogs && (blogs.length < 1) &&
+                <div className="navbar">No articles yet. 
+                    <Link to="/create" style={{
+                        color: "white",
+                        backgroundColor: "#f1356d",
+                        borderRadius: "10px"
+                    }} className="href">Write and Article</Link>
+                </div> 
+            }
+            {/*<button onClick={() => setName('Ruby') }>change name</button>
+            <p>{name}</p>*/}
         </div>
     );
 }
+
+
 
 export default Home;
